@@ -1,0 +1,109 @@
+/* ============================================================ BASE */
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: 0.1px;
+}
+#root {
+  height: 100%;
+}
+button {
+  font-family: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.mono {
+  font-family: var(--mono);
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+::-webkit-scrollbar-thumb {
+  background: #22303f;
+  border-radius: 8px;
+  border: 2px solid var(--panel);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2d3e52;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Visible focus for keyboard users — a control room is not always mouse-driven. */
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ============================================================ AMBIENT BACKDROP */
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.ambient::before,
+.ambient::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.22;
+}
+.ambient::before {
+  width: 620px;
+  height: 620px;
+  left: -160px;
+  top: -200px;
+  background: radial-gradient(circle, #1e8f86, transparent 70%);
+  animation: drift1 26s ease-in-out infinite;
+}
+.ambient::after {
+  width: 540px;
+  height: 540px;
+  right: -140px;
+  bottom: -160px;
+  background: radial-gradient(circle, #7b3fb0, transparent 70%);
+  animation: drift2 32s ease-in-out infinite;
+}
+@keyframes drift1 {
+  50% {
+    transform: translate(80px, 60px) scale(1.1);
+  }
+}
+@keyframes drift2 {
+  50% {
+    transform: translate(-70px, -50px) scale(1.08);
+  }
+}
+@keyframes beat {
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.05s !important;
+  }
+}

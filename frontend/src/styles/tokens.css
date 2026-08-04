@@ -1,0 +1,47 @@
+/* ============================================================ DESIGN TOKENS
+ *
+ * The command-center palette. Dark by necessity: this runs on wall displays in rooms
+ * that are kept dim, and severity colour has to be the brightest thing on screen.
+ * Category and source hues are duplicated in lib/constants.js because Leaflet pins are
+ * built imperatively and cannot read CSS custom properties.
+ * ========================================================================= */
+:root {
+  --bg: #070a10;
+  --bg-2: #0a0e16;
+  --panel: #0f141d;
+  --panel-2: #131a25;
+  --glass: rgba(17, 23, 33, 0.72);
+  --line: #1d2735;
+  --line-2: #273445;
+  --text: #e8eef6;
+  --muted: #7e8b9e;
+  --muted-2: #586475;
+  --brand: #36d6c3;
+  --brand-dim: #1c5f59;
+
+  /* severity scale — thresholds live in lib/constants.js */
+  --sev-crit: #ff4d57;
+  --sev-high: #ff8a3d;
+  --sev-mod: #ffd166;
+  --sev-low: #56b3ff;
+
+  /* category palette */
+  --c-rescue: #ffb547;
+  --c-fire: #ff5c5c;
+  --c-medical: #ff6fb5;
+  --c-hazard: #ff8a3d;
+  --c-flood: #4aa8ff;
+  --c-infra: #8b98ad;
+  --c-shelter: #46d39a;
+
+  /* source palette */
+  --s-112: #ff5c5c;
+  --s-twitter: #4aa8ff;
+  --s-sms: #46d39a;
+  --s-sensor: #b48cff;
+
+  --mono: ui-monospace, "SF Mono", "Segoe UI Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: "Inter", system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --shadow: 0 18px 50px -18px rgba(0, 0, 0, 0.75);
+  --radius: 14px;
+}
