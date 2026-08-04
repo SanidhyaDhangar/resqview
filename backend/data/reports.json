@@ -1,0 +1,31 @@
+{
+  "scenario": "Monsoon flooding, Mumbai, India",
+  "center": [19.05, 72.87],
+  "reports": [
+    { "id": "r001", "t": 0,  "source": "112",     "lat": 19.0185, "lon": 72.8430, "text": "Caller reports 4 people trapped on the roof of a house near Hindmata, Dadar, water rising fast" },
+    { "id": "r002", "t": 3,  "source": "twitter", "lat": 19.0192, "lon": 72.8422, "text": "ppl stuck on roof near hindmata dadar, water everywhere send help #MumbaiRains" },
+    { "id": "r003", "t": 6,  "source": "sms",     "lat": 19.0270, "lon": 72.8570, "text": "Need insulin, diabetic grandmother, shelter at Matunga school, no power" },
+    { "id": "r004", "t": 9,  "source": "twitter", "lat": 19.0650, "lon": 72.8790, "text": "huge fire at the godown in Kurla, smoke everywhere, no fire brigade yet" },
+    { "id": "r005", "t": 12, "source": "112",     "lat": 19.0655, "lon": 72.8795, "text": "Structure fire reported Kurla godown, flames visible, possible people inside" },
+    { "id": "r006", "t": 15, "source": "sensor",  "lat": 19.0700, "lon": 72.8700, "text": "Mithi River level sensor M17 exceeded flood threshold, 4.1m and rising" },
+    { "id": "r007", "t": 18, "source": "twitter", "lat": 19.1190, "lon": 72.8460, "text": "Andheri subway totally flooded, cars submerged, road blocked" },
+    { "id": "r008", "t": 22, "source": "sms",     "lat": 19.0188, "lon": 72.8428, "text": "still on the roof hindmata, 4 of us, one child, water at the windows now" },
+    { "id": "r009", "t": 26, "source": "112",     "lat": 19.0540, "lon": 72.8400, "text": "Elderly man collapsed, possible heart attack, Bandra area, needs ambulance" },
+    { "id": "r010", "t": 30, "source": "twitter", "lat": 19.0275, "lon": 72.8565, "text": "matunga shelter packed, running out of water and food, lots of kids here" },
+    { "id": "r011", "t": 35, "source": "sensor",  "lat": 19.0710, "lon": 72.8705, "text": "Mithi River sensor M17 now 4.4m, embankment overtopping risk HIGH" },
+    { "id": "r012", "t": 40, "source": "twitter", "lat": 19.0648, "lon": 72.8800, "text": "kurla godown fire spreading to next building, someone said workers inside!!" },
+    { "id": "r013", "t": 45, "source": "sms",     "lat": 19.0390, "lon": 72.8620, "text": "boat needed, family of 5 stranded second floor Sion, water still rising" },
+    { "id": "r014", "t": 50, "source": "112",     "lat": 19.0395, "lon": 72.8615, "text": "Multiple residents stranded upper floors Sion, requesting water rescue" },
+    { "id": "r015", "t": 55, "source": "twitter", "lat": 19.1185, "lon": 72.8455, "text": "andheri subway still blocked, ambulance cant get through to the hospital" },
+    { "id": "r016", "t": 60, "source": "sensor",  "lat": 19.0620, "lon": 72.8990, "text": "Power grid Chembur sector offline, ~12000 households without power" },
+    { "id": "r017", "t": 66, "source": "sms",     "lat": 19.0280, "lon": 72.8560, "text": "diabetic grandma getting worse at matunga shelter, still no insulin, please hurry" },
+    { "id": "r018", "t": 72, "source": "twitter", "lat": 19.0190, "lon": 72.8425, "text": "is anyone coming for the hindmata roof people?? been hours" },
+    { "id": "r019", "t": 78, "source": "112",     "lat": 19.0720, "lon": 72.8900, "text": "Gas smell reported near Chembur, possible ruptured pipeline, evacuating lane" },
+    { "id": "r020", "t": 85, "source": "twitter", "lat": 19.0725, "lon": 72.8895, "text": "strong gas smell chembur whole lane, scary" },
+    { "id": "r021", "t": 92, "source": "sensor",  "lat": 19.0700, "lon": 72.8702, "text": "Mithi River water level sensor M17 holding at 4.4m flood mark, pumps engaged" },
+    { "id": "r022", "t": 100, "source": "sms",    "lat": 19.0392, "lon": 72.8618, "text": "sion family still waiting, water at 2nd floor now, baby with us" },
+    { "id": "r023", "t": 108, "source": "twitter","lat": 19.0652, "lon": 72.8798, "text": "fire brigade finally arrived at kurla godown, hosing it down" },
+    { "id": "r024", "t": 116, "source": "112",    "lat": 19.0440, "lon": 72.8680, "text": "Collapsed wall trapped pedestrian, BKC edge, conscious but leg pinned" },
+    { "id": "r025", "t": 125, "source": "twitter","lat": 19.0272, "lon": 72.8568, "text": "volunteers brought water to matunga shelter, situation a bit better now" }
+  ]
+}

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResQView — IEEE Response Quest Proposal</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2330; --line:#2a3240;
+    --text:#e6edf3; --muted:#9aa7b4; --accent:#2f81f7; --accent2:#1f6feb;
+    --crit:#f85149; --high:#fb8500; --med:#f2cc0c; --low:#3fb950; --info:#58a6ff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  header.hero{padding:64px 0 40px;border-bottom:1px solid var(--line);
+    background:radial-gradient(900px 360px at 80% -10%,rgba(47,129,247,.18),transparent)}
+  .badge{display:inline-block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:4px 12px;margin-bottom:18px}
+  h1{font-size:48px;line-height:1.05;letter-spacing:-.02em;margin-bottom:10px}
+  h1 .dot{color:var(--accent)}
+  .tag{font-size:20px;color:var(--muted);max-width:680px}
+  .meta{margin-top:22px;font-size:13px;color:var(--muted)}
+  .meta b{color:var(--text)}
+  section{padding:46px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
+  h3{font-size:24px;letter-spacing:-.01em;margin-bottom:12px}
+  p.lead{font-size:18px;color:var(--text)}
+  p{color:var(--muted);margin-bottom:12px}
+  .grid{display:grid;gap:18px}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px}
+  .card h4{font-size:16px;margin-bottom:8px}
+  .card .num{font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.1em}
+  .card p{font-size:14px;margin:0}
+
+  /* ---- DASHBOARD MOCKUP ---- */
+  .mock{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    box-shadow:0 24px 60px rgba(0,0,0,.45)}
+  .mockbar{display:flex;align-items:center;gap:8px;padding:12px 16px;background:#0b0f14;border-bottom:1px solid var(--line)}
+  .dots{display:flex;gap:6px}.dots i{width:11px;height:11px;border-radius:50%;display:block}
+  .dots i:nth-child(1){background:#f85149}.dots i:nth-child(2){background:#f2cc0c}.dots i:nth-child(3){background:#3fb950}
+  .mocktitle{font-size:13px;color:var(--muted);margin-left:8px}
+  .mockchip{margin-left:auto;font-size:11px;color:var(--low);display:flex;align-items:center;gap:6px}
+  .mockchip .pulse{width:8px;height:8px;border-radius:50%;background:var(--low);box-shadow:0 0 0 0 rgba(63,185,80,.6);animation:pulse 1.8s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(63,185,80,.5)}70%{box-shadow:0 0 0 10px rgba(63,185,80,0)}100%{box-shadow:0 0 0 0 rgba(63,185,80,0)}}
+  .mockbody{display:grid;grid-template-columns:190px 1fr 300px;height:520px}
+  .panelL{background:var(--panel2);border-right:1px solid var(--line);padding:16px;font-size:13px}
+  .panelL h5{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px}
+  .filt{display:flex;align-items:center;gap:8px;padding:7px 0;color:var(--text)}
+  .filt .sw{width:30px;height:16px;border-radius:999px;background:var(--accent);position:relative;flex:0 0 auto}
+  .filt .sw::after{content:"";position:absolute;right:2px;top:2px;width:12px;height:12px;border-radius:50%;background:#fff}
+  .filt.off .sw{background:#3a4452}.filt.off .sw::after{left:2px;right:auto}
+  .legend{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:12px;color:var(--muted)}
+  .legend i{width:10px;height:10px;border-radius:50%;display:block}
+
+  /* map */
+  .map{position:relative;background:
+      linear-gradient(0deg,rgba(255,255,255,.03) 1px,transparent 1px) 0 0/100% 40px,
+      linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px) 0 0/40px 100%,
+      #11161d;overflow:hidden}
+  .river{position:absolute;left:-5%;right:-5%;top:58%;height:120px;
+    background:linear-gradient(180deg,#15324d,#0e2236);transform:rotate(-7deg);
+    border-top:2px solid #1f4e74;border-bottom:2px solid #163a57;filter:blur(.3px)}
+  .roads{position:absolute;inset:0;opacity:.5}
+  .roads span{position:absolute;background:#222a34;height:3px;border-radius:2px}
+  .pin{position:absolute;transform:translate(-50%,-50%);cursor:pointer}
+  .pin .glyph{width:18px;height:18px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);
+    border:2px solid rgba(255,255,255,.85);box-shadow:0 2px 6px rgba(0,0,0,.5)}
+  .pin .ring{position:absolute;left:50%;top:50%;width:18px;height:18px;border-radius:50%;
+    transform:translate(-50%,-50%);}
+  .pin.crit .glyph{background:var(--crit)} .pin.high .glyph{background:var(--high)}
+  .pin.med .glyph{background:var(--med)} .pin.low .glyph{background:var(--low)}
+  .pin.info .glyph{background:var(--info)}
+  .pin.crit .ring{animation:ring 1.6s infinite;border:2px solid var(--crit)}
+  @keyframes ring{0%{width:18px;height:18px;opacity:.7}100%{width:46px;height:46px;opacity:0}}
+  .pin .cnt{position:absolute;top:-8px;right:-10px;background:#0b0f14;border:1px solid var(--line);
+    color:#fff;font-size:10px;font-weight:700;border-radius:999px;padding:1px 5px}
+  .maptag{position:absolute;left:14px;bottom:12px;font-size:11px;color:var(--muted);
+    background:rgba(0,0,0,.5);padding:4px 8px;border-radius:6px}
+
+  /* incident list */
+  .panelR{background:var(--panel2);border-left:1px solid var(--line);overflow:hidden;display:flex;flex-direction:column}
+  .panelR .rh{padding:13px 16px;border-bottom:1px solid var(--line);font-size:12px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted)}
+  .inc{padding:13px 16px;border-bottom:1px solid var(--line);border-left:3px solid transparent}
+  .inc.crit{border-left-color:var(--crit)} .inc.high{border-left-color:var(--high)}
+  .inc.med{border-left-color:var(--med)} .inc.info{border-left-color:var(--info)}
+  .inc .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+  .inc .ttl{font-size:14px;color:var(--text);font-weight:600}
+  .inc .sev{font-size:10px;font-weight:700;letter-spacing:.06em;padding:2px 7px;border-radius:999px}
+  .sev.crit{background:rgba(248,81,73,.18);color:var(--crit)} .sev.high{background:rgba(251,133,0,.18);color:var(--high)}
+  .sev.med{background:rgba(242,204,12,.16);color:var(--med)} .sev.info{background:rgba(88,166,255,.16);color:var(--info)}
+  .inc .sub{font-size:12px;color:var(--muted)}
+  .inc .src{margin-top:5px;font-size:11px;color:#6b7785}
+  .inc .src b{color:#8b97a4;font-weight:600}
+
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line)}
+  th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  td b{color:var(--text)} td{color:var(--muted)}
+  .free{color:var(--low);font-weight:600}
+
+  .pipe{display:flex;align-items:stretch;gap:0;flex-wrap:wrap}
+  .step{flex:1;min-width:160px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;position:relative}
+  .step .n{font-size:12px;color:var(--accent);font-weight:700}
+  .step h4{font-size:15px;margin:6px 0}
+  .step p{font-size:13px;margin:0}
+  .arrow{display:flex;align-items:center;color:var(--accent);font-size:22px;padding:0 6px}
+  @media(max-width:900px){.g3,.g4,.g2{grid-template-columns:1fr}.mockbody{grid-template-columns:1fr;height:auto}
+    .panelL,.panelR{border:none;border-top:1px solid var(--line)}.map{height:340px}.arrow{display:none}}
+  ul.clean{list-style:none;margin:8px 0}
+  ul.clean li{padding:7px 0 7px 26px;position:relative;color:var(--muted);font-size:15px}
+  ul.clean li::before{content:"";position:absolute;left:0;top:13px;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  footer{padding:40px 0 70px;color:#6b7785;font-size:13px}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:6px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;text-align:center}
+  .kpi .big{font-size:30px;font-weight:800;color:var(--text);letter-spacing:-.02em}
+  .kpi .lab{font-size:12px;color:var(--muted);margin-top:4px}
+  @media print{body{background:#fff;color:#111}.mock{box-shadow:none}section{border-color:#ddd}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="badge">IEEE Response Quest™ Challenge · 2026</span>
+    <h1>ResQView<span class="dot">.</span></h1>
+    <p class="tag">A live common operating picture that turns the flood of crisis data — 112 emergency calls, social posts, SMS, sensors — into one ranked, mapped view responders can read in five seconds.</p>
+    <div class="meta"><b>Category:</b> Emergency Intelligence &nbsp;·&nbsp; <b>Disciplines:</b> Data Science · GIS · NLP · Emergency Management &nbsp;·&nbsp; <b>Status:</b> Concept &amp; working prototype plan</div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>The Problem</h2>
+    <p class="lead">In a disaster, the bottleneck isn't a lack of information — it's too much of it, scattered across too many channels.</p>
+    <p>A single monsoon flood generates thousands of 112 calls, tweets, texts, and sensor alerts in the first hour. Control rooms and field commanders must manually read, locate, de-duplicate, and prioritize all of it while lives are on the line. Critical reports get buried; the same incident gets reported fifty times; responders arrive late or to the wrong place. Decisions are made on partial pictures.</p>
+    <div class="kpis">
+      <div class="kpi"><div class="big">1000s</div><div class="lab">reports / hour in a major event</div></div>
+      <div class="kpi"><div class="big">~70%</div><div class="lab">are duplicates of existing incidents</div></div>
+      <div class="kpi"><div class="big">5+ ch.</div><div class="lab">channels monitored separately today</div></div>
+      <div class="kpi"><div class="big">0</div><div class="lab">unified, ranked view that exists now</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Our Solution — the visual</h2>
+    <h3>One screen. Every incident. Worst-first.</h3>
+    <p style="margin-bottom:22px">A live dashboard that ingests every channel, extracts <i>what · where · how urgent</i>, merges duplicate reports into single verified incidents, and ranks them by severity on a map. Below is how the responder's screen looks during an active event.</p>
+
+    <div class="mock">
+      <div class="mockbar">
+        <span class="dots"><i></i><i></i><i></i></span>
+        <span class="mocktitle">ResQView — Mumbai Monsoon Flood · Control Room</span>
+        <span class="mockchip"><span class="pulse"></span> LIVE · 25 reports → 12 incidents</span>
+      </div>
+      <div class="mockbody">
+
+        <aside class="panelL">
+          <h5>Layers</h5>
+          <div class="filt"><span class="sw"></span> Water rescue</div>
+          <div class="filt"><span class="sw"></span> Fire</div>
+          <div class="filt"><span class="sw"></span> Medical</div>
+          <div class="filt"><span class="sw"></span> Infrastructure</div>
+          <div class="filt off"><span class="sw"></span> Resolved</div>
+          <h5>Severity</h5>
+          <div class="legend"><i style="background:var(--crit)"></i> Critical · life threat</div>
+          <div class="legend"><i style="background:var(--high)"></i> High · urgent</div>
+          <div class="legend"><i style="background:var(--med)"></i> Medium</div>
+          <div class="legend"><i style="background:var(--info)"></i> Sensor / info</div>
+          <h5>Sources</h5>
+          <div class="legend">112 · Twitter/X · SMS · IoT sensors</div>
+        </aside>
+
+        <div class="map">
+          <div class="river"></div>
+          <div class="roads">
+            <span style="left:8%;top:20%;width:80%;transform:rotate(4deg)"></span>
+            <span style="left:5%;top:42%;width:90%;transform:rotate(-3deg)"></span>
+            <span style="left:18%;top:8%;width:3px;height:70%;transform:rotate(8deg)"></span>
+            <span style="left:55%;top:6%;width:3px;height:80%;transform:rotate(-6deg)"></span>
+          </div>
+          <div class="pin crit" style="left:30%;top:30%"><span class="ring"></span><span class="glyph"></span><span class="cnt">x3</span></div>
+          <div class="pin crit" style="left:62%;top:64%"><span class="ring"></span><span class="glyph"></span><span class="cnt">x3</span></div>
+          <div class="pin high" style="left:48%;top:24%"><span class="glyph"></span><span class="cnt">x3</span></div>
+          <div class="pin high" style="left:74%;top:40%"><span class="glyph"></span></div>
+          <div class="pin med" style="left:24%;top:55%"><span class="glyph"></span><span class="cnt">x3</span></div>
+          <div class="pin med" style="left:40%;top:72%"><span class="glyph"></span></div>
+          <div class="pin info" style="left:80%;top:18%"><span class="glyph"></span><span class="cnt">x3</span></div>
+          <div class="pin info" style="left:88%;top:50%"><span class="glyph"></span></div>
+          <div class="pin med" style="left:58%;top:42%"><span class="glyph"></span></div>
+          <div class="maptag">© OpenStreetMap · free tiles · no API key</div>
+        </div>
+
+        <div class="panelR">
+          <div class="rh">Incidents · ranked by severity</div>
+          <div class="inc crit">
+            <div class="top"><span class="ttl">4 trapped on roof</span><span class="sev crit">CRITICAL</span></div>
+            <div class="sub">Hindmata, Dadar · 1 child · water at windows</div>
+            <div class="src"><b>3 reports merged</b> · 112 + 2× Twitter</div>
+          </div>
+          <div class="inc crit">
+            <div class="top"><span class="ttl">Family stranded, rising water</span><span class="sev crit">CRITICAL</span></div>
+            <div class="sub">Sion · 5 people, infant · 2nd floor</div>
+            <div class="src"><b>3 reports merged</b> · 112 + SMS</div>
+          </div>
+          <div class="inc high">
+            <div class="top"><span class="ttl">Warehouse fire, possible workers inside</span><span class="sev high">HIGH</span></div>
+            <div class="sub">Kurla godown · spreading · units en route</div>
+            <div class="src"><b>3 reports merged</b> · 112 + Twitter</div>
+          </div>
+          <div class="inc high">
+            <div class="top"><span class="ttl">Suspected gas leak, block evacuating</span><span class="sev high">HIGH</span></div>
+            <div class="sub">Chembur · ruptured pipeline reported</div>
+            <div class="src"><b>2 reports merged</b> · 112 + Twitter</div>
+          </div>
+          <div class="inc med">
+            <div class="top"><span class="ttl">Shelter low on water/insulin</span><span class="sev med">MEDIUM</span></div>
+            <div class="sub">Matunga shelter · diabetic patient · no power</div>
+            <div class="src"><b>3 reports merged</b> · SMS ×3</div>
+          </div>
+          <div class="inc info">
+            <div class="top"><span class="ttl">Levee overtopping risk</span><span class="sev info">SENSOR</span></div>
+            <div class="sub">Mithi River sensor M17 · 4.4 m · pumps engaged</div>
+            <div class="src"><b>3 readings</b> · IoT water-level</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top:14px;font-size:13px">↑ Mockup of the live view. Pulsing red rings flag active life-threats; the <b>x3</b> badges show how many raw reports were merged into one incident; every incident links back to its original sources so a human always verifies before acting.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>How it works</h2>
+    <h3>A four-stage pipeline, near real-time</h3>
+    <div class="pipe" style="margin-top:18px">
+      <div class="step"><div class="n">01</div><h4>Ingest</h4><p>Pulls 112 emergency calls, social posts, SMS hotlines and IoT sensors into one stream as they arrive.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">02</div><h4>Extract</h4><p>NLP reads each message for <i>location</i>, <i>need</i> (rescue/fire/medical), and <i>urgency</i> — turning "stuck on roof, water rising" into structured, geocoded data.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">03</div><h4>Cluster</h4><p>Reports about the same event (by location + meaning) merge into one verified incident — killing duplicate noise.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">04</div><h4>Triage &amp; map</h4><p>Each incident gets a severity score and lands on the map, ranked worst-first, with sources attached.</p></div>
+    </div>
+    <p style="margin-top:18px"><b style="color:var(--text)">Human-in-the-loop by design.</b> ResQView is decision <i>support</i>, never autonomous dispatch. Every flag shows its confidence and links to raw sources, so commanders trust it and stay in control.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Build plan</h2>
+    <div class="grid g3">
+      <div class="card"><div class="num">PHASE 1 · DEMO</div><h4>Working prototype</h4><p>Full pipeline running on a simulated flood feed, live map dashboard. Already scoped — buildable now at zero cost.</p></div>
+      <div class="card"><div class="num">PHASE 2 · PILOT</div><h4>Real feeds</h4><p>Connect a live social stream + a partner agency's report intake. Add LLM extraction and confidence tuning.</p></div>
+      <div class="card"><div class="num">PHASE 3 · SCALE</div><h4>Field deployment</h4><p>Multi-incident, multi-agency, offline-resilient. Hardened, hosted, role-based access for command centers.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Resources &amp; cost</h2>
+    <h3>Free to build today — a clear path to scale on funding</h3>
+    <table>
+      <thead><tr><th>Layer</th><th>Prototype (free now)</th><th>Funded scale-up</th></tr></thead>
+      <tbody>
+        <tr><td><b>Maps / GIS</b></td><td class="free">Leaflet + OpenStreetMap — no key, no fee</td><td>Mapbox / Esri for high traffic</td></tr>
+        <tr><td><b>Backend</b></td><td class="free">Python (standard library) — zero install</td><td>FastAPI on AWS / GCP, autoscaling</td></tr>
+        <tr><td><b>NLP / triage</b></td><td class="free">Rule-based keyword + geo matching, offline</td><td>Claude / GPT API for richer extraction</td></tr>
+        <tr><td><b>Geocoding</b></td><td class="free">Nominatim (free) / pre-tagged coords</td><td>Paid geocoder for volume + SLA</td></tr>
+        <tr><td><b>Data feeds</b></td><td class="free">Simulated multi-channel crisis stream</td><td>Live 112 / control-room CAD, social firehose, sensors</td></tr>
+        <tr><td><b>Hosting</b></td><td class="free">Runs on a laptop / free tier</td><td>Cloud + redundancy + offline mesh fallback</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:14px">The architecture is identical at every stage — funding only swaps individual components for higher-capacity paid ones. <b style="color:var(--low)">Total cost to demo: $0.</b></p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Why it fits the challenge</h2>
+    <ul class="clean">
+      <li>Directly answers the brief: <b style="color:var(--text)">identify, organize, and visualize emergency information in near real-time.</b></li>
+      <li>Genuinely cross-disciplinary — data science, GIS, NLP, and emergency management in one tool.</li>
+      <li>Demoable: a judge sees a real, working dashboard, not just slides.</li>
+      <li>Responder-first: built around trust, source traceability, and human control.</li>
+      <li>Credible scaling story for funding without re-architecting.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <b style="color:var(--text)">ResQView</b> — concept proposal for the IEEE Response Quest™ Challenge.<br>
+    Submission deadline: 29 May 2026 · Requires an IEEE member as team lead.<br>
+    This document is a self-contained mockup; the full prototype is scoped and ready to build.
+  </div>
+</footer>
+
+</body>
+</html>
