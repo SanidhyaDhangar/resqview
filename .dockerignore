@@ -1,0 +1,25 @@
+# Build context hygiene: keep the image small and the layer cache stable.
+.git/
+.github/
+.claude/
+docs/
+
+**/node_modules/
+**/dist/
+**/.venv/
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+
+backend/tests/
+backend/requirements-dev.txt
+
+**/.env
+**/.env.*
+!**/.env.example
+
+*.md
+!README.md
+
+_shot*.png
+*.log

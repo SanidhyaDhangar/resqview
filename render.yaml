@@ -1,0 +1,21 @@
+# Render blueprint — one container serving the API and the Common Operating Picture.
+#
+# Deploy: push to GitHub, then New → Blueprint on render.com and point it at the repo.
+# The free instance type sleeps when idle; the first request after a sleep takes a few
+# seconds to wake, which is worth knowing before demonstrating it live.
+services:
+  - type: web
+    name: resqview
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      # Scenario replay speed: compresses the ~125s scripted feed into ~50s of wall clock.
+      - key: RESQVIEW_TIME_SCALE
+        value: "2.5"
+      # Be a good citizen of Seattle's open-data API — cache each live pull briefly.
+      - key: RESQVIEW_LIVE_TTL
+        value: "20"
