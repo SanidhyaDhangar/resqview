@@ -1,18 +1,24 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { fetchIncidents, resetFeed } from "../api/client.js";
+import { fetchIncidents } from "../api/client.js";
 import { CRITICAL_THRESHOLD, POLL_INTERVAL_MS } from "../lib/constants.js";
+
+const nowSeconds = () => Date.now() / 1000;
 
 /**
  * Keeps one live picture of the incident feed.
  *
- * Two behaviours here are deliberate operational choices rather than conveniences:
+ * Three behaviours here are deliberate operational choices rather than conveniences:
  *
- * 1. **A failed poll never blanks the picture.** The last good snapshot stays on screen
+ * 1. **This client owns the replay clock.** It records when the replay started and sends
+ *    that timestamp with every poll, so the server holds no per-viewer state and any
+ *    instance can answer any request. Restarting is therefore instant and local — a new
+ *    start time, no round trip, nothing to get out of sync.
+ * 2. **A failed poll never blanks the picture.** The last good snapshot stays on screen
  *    with an error banner beside it. An empty map must always mean "no reports", never
  *    "the network hiccuped" — a responder cannot tell those apart visually, so the UI
  *    must never put them in the same state.
- * 2. **New incidents are announced once.** Ids already seen are tracked so an incident
+ * 3. **New incidents are announced once.** Ids already seen are tracked so an incident
  *    that merely re-scores does not re-alert. Alert fatigue is a safety problem.
  *
  * @param {string} mode - "scenario" | "live"
@@ -24,6 +30,8 @@ export function useIncidents(mode, onNewIncident) {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // When this client's replay started. The server derives the mission clock from it.
+  const sinceRef = useRef(nowSeconds());
   // Ids already surfaced, so re-scoring an incident does not re-alert.
   const seenIds = useRef(new Set());
   // Suppress alerts for the first painted frame: everything is "new" on arrival.
@@ -33,9 +41,9 @@ export function useIncidents(mode, onNewIncident) {
   notify.current = onNewIncident;
 
   const poll = useCallback(
-    async (signal) => {
+    async (signal, { fresh = false } = {}) => {
       try {
-        const snapshot = await fetchIncidents(mode, { signal });
+        const snapshot = await fetchIncidents(mode, { since: sinceRef.current, fresh, signal });
         if (signal?.aborted) return;
 
         // The API soft-fails a broken live feed in-band so the UI can stay up.
@@ -69,6 +77,7 @@ export function useIncidents(mode, onNewIncident) {
 
   // Reset per-mode memory, then poll on an interval until the mode changes or we unmount.
   useEffect(() => {
+    sinceRef.current = nowSeconds();
     seenIds.current = new Set();
     hasPainted.current = false;
     setData(null);
@@ -85,17 +94,13 @@ export function useIncidents(mode, onNewIncident) {
     };
   }, [poll]);
 
-  /** Replay the scripted scenario, or force a fresh pull of the live feed. */
+  /** Replay the scripted scenario from T+00:00, or force a fresh pull of the live feed. */
   const restart = useCallback(async () => {
     setIsLoading(true);
+    sinceRef.current = nowSeconds();
     seenIds.current = new Set();
     hasPainted.current = false;
-    try {
-      await resetFeed(mode);
-    } catch {
-      // A failed reset is not fatal — the next poll still refreshes the picture.
-    }
-    await poll();
+    await poll(undefined, { fresh: mode === "live" });
   }, [mode, poll]);
 
   return { data, error, isLoading, restart };

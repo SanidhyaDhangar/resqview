@@ -69,10 +69,6 @@ class SeattleLiveSource(ReportSource):
         self._cache: list[Report] | None = None
         self._cache_t = 0.0
 
-    def reset(self) -> None:
-        self._cache = None
-        self._cache_t = 0.0
-
     async def _fetch(self) -> list[dict]:
         headers = {"User-Agent": "ResQView/1.0"}
         async with httpx.AsyncClient(timeout=10, headers=headers) as client:
@@ -116,9 +112,10 @@ class SeattleLiveSource(ReportSource):
             reports.sort(key=lambda x: x.t)
         return reports
 
-    async def snapshot(self) -> Snapshot:
+    async def snapshot(self, since: float | None = None, fresh: bool = False) -> Snapshot:
+        # `since` is meaningless for a live feed — "now" is whatever upstream just said.
         now = time.time()
-        if self._cache is not None and now - self._cache_t < self.ttl:
+        if not fresh and self._cache is not None and now - self._cache_t < self.ttl:
             reports = self._cache
         else:
             try:

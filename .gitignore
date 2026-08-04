@@ -29,8 +29,8 @@ dist/
 Thumbs.db
 desktop.ini
 
-# --- Local agent settings (keep shared config, ignore personal overrides) ---
-.claude/settings.local.json
+# --- Local editor/tooling config (never published) ---
+.claude/
 
 # --- Scratch artifacts ---
 _shot*.png

@@ -1,0 +1,20 @@
+# Keep the deployment bundle to what actually runs.
+.git/
+.github/
+.claude/
+docs/
+
+**/node_modules/
+**/.venv/
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+
+backend/tests/
+backend/requirements-dev.txt
+
+Dockerfile
+.dockerignore
+render.yaml
+
+*.log

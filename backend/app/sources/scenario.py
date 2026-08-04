@@ -1,4 +1,11 @@
-"""Scripted source — the authored Mumbai monsoon-flood scenario, replayed over time."""
+"""Scripted source — the authored Mumbai monsoon-flood scenario, replayed over time.
+
+The replay clock is **owned by the caller**. The client records when it started and sends
+that timestamp with every poll; this source turns it into a position in the feed. Nothing
+about where the replay has reached is stored here, so consecutive polls served by
+different processes still agree on the time — and restarting the replay costs no round
+trip at all, because the client simply picks a new start time.
+"""
 from __future__ import annotations
 
 import json
@@ -19,16 +26,19 @@ class ScenarioSource(ReportSource):
         self.reports: list[Report] = [Report(**r) for r in raw["reports"]]
         self.time_scale = time_scale
         self.duration = max(r.t for r in self.reports)
-        self._start = time.monotonic()
 
-    def reset(self) -> None:
-        self._start = time.monotonic()
+    def _elapsed_scenario_seconds(self, since: float | None) -> float:
+        """Position in the feed, in scenario-seconds, for a replay started at ``since``."""
+        if since is None:
+            # No replay in progress: serve the complete scenario, so that a bare
+            # `curl /api/incidents` shows the whole picture rather than an empty one.
+            return float(self.duration)
 
-    def _elapsed_scenario_seconds(self) -> float:
-        return (time.monotonic() - self._start) * self.time_scale
+        wall_elapsed = max(0.0, time.time() - since)
+        return min(wall_elapsed * self.time_scale, float(self.duration))
 
-    async def snapshot(self) -> Snapshot:
-        now = self._elapsed_scenario_seconds()
+    async def snapshot(self, since: float | None = None, fresh: bool = False) -> Snapshot:
+        now = self._elapsed_scenario_seconds(since)
         released = [r for r in self.reports if r.t <= now]
         return Snapshot(
             reports=released,

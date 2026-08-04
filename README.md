@@ -19,6 +19,10 @@ incident picture that stays traceable to its evidence.**
 
 ## Quick start
 
+**Deploy** — the API is stateless, so it drops onto Vercel as-is (`vercel.json` and
+`pyproject.toml` are already configured), or onto any container host via the Dockerfile
+and `render.yaml`.
+
 **Docker** — one command, no toolchain:
 
 ```bash
@@ -148,9 +152,23 @@ backend/app/sources/  ──►  backend/app/engine/  ──►  backend/app/rou
 |----------|---------|
 | `GET /api/health` | Liveness probe. |
 | `GET /api/incidents?mode=scenario\|live` | Ranked incidents, the raw feed, and the scenario clock. |
-| `POST /api/reset?mode=…` | Restart the scripted clock, or clear the live cache. |
 
 Interactive API docs at `/docs` when the server is running.
+
+**The API holds no per-viewer state.** The client records when its replay began and passes
+it as `since` (Unix seconds); the server turns that into a position in the feed. Omit
+`since` to get the complete scenario, add `fresh=true` to bypass the live cache:
+
+```bash
+curl 'localhost:8000/api/incidents?mode=scenario'                    # whole picture
+curl "localhost:8000/api/incidents?mode=scenario&since=$(date +%s)"  # replay from T+00:00
+curl 'localhost:8000/api/incidents?mode=live&fresh=true'             # force a live re-pull
+```
+
+That is what lets it run on serverless platforms, where consecutive polls routinely land
+on different instances. With the clock held in process memory, the mission time would jump
+between requests and "restart the replay" would reset an instance the next poll never
+reaches. Restarting is now purely client-side and costs no round trip at all.
 
 ### Adding a data source
 

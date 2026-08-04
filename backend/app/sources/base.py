@@ -1,4 +1,11 @@
-"""The contract every feed implements — the seam that makes the source swappable."""
+"""The contract every feed implements — the seam that makes the source swappable.
+
+Sources are **stateless across requests**. A feed's position in time is derived from
+values the caller supplies, never from instance memory, so any request can be served by
+any process. That is what lets this deploy to serverless platforms where consecutive
+polls routinely land on different instances: without it the mission clock would jump
+between requests and a replay would be impossible to follow.
+"""
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -27,8 +34,13 @@ class ReportSource(ABC):
     mode: str
 
     @abstractmethod
-    async def snapshot(self) -> Snapshot:
-        """Return the currently-available reports and metadata."""
+    async def snapshot(self, since: float | None = None, fresh: bool = False) -> Snapshot:
+        """Return the currently-available reports and metadata.
 
-    def reset(self) -> None:
-        """Restart the feed (scenario clock) or clear caches (live)."""
+        Args:
+            since: Unix timestamp (seconds) at which the caller started its replay.
+                Scripted feeds derive the mission clock from it. ``None`` means "no replay
+                in progress" — serve the feed in full.
+            fresh: Bypass caching and re-fetch from upstream. Used by the operator's
+                explicit refresh, which must never hand back a stale picture.
+        """

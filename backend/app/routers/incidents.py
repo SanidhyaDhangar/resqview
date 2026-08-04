@@ -1,4 +1,8 @@
-"""The incidents API — one contract, any source, re-triaged on every request."""
+"""The incidents API — one contract, any source, re-triaged on every request.
+
+Stateless by design: the caller supplies its replay start time, so any instance can serve
+any poll. See ``sources/base.py`` for why that matters.
+"""
 from __future__ import annotations
 
 from fastapi import APIRouter, Query
@@ -12,14 +16,25 @@ router = APIRouter(tags=["incidents"])
 
 
 @router.get("/incidents", response_model=IncidentsResponse)
-async def get_incidents(mode: str = Query("scenario", description="scenario | live")) -> IncidentsResponse:
+async def get_incidents(
+    mode: str = Query("scenario", description="scenario | live"),
+    since: float | None = Query(
+        None,
+        description=(
+            "Unix timestamp (seconds) when the caller started its replay. Drives the "
+            "mission clock for scripted feeds. Omit to receive the complete scenario."
+        ),
+    ),
+    fresh: bool = Query(False, description="Bypass the live cache and re-fetch upstream."),
+) -> IncidentsResponse:
     sources = get_sources()
     source = sources.get(mode, sources["scenario"])
 
     try:
-        snap = await source.snapshot()
+        snap = await source.snapshot(since=since, fresh=fresh)
     except SourceError as e:
-        # Soft-fail so the UI can show a retry toast instead of breaking.
+        # Soft-fail in-band so the UI keeps the last good picture and marks it stale,
+        # rather than blanking the map — an empty map must never mean "we lost the feed".
         return IncidentsResponse(
             mode=mode, scenario="Live · Seattle Fire & EMS 911", center=SEATTLE_CENTER,
             raw_received=0, raw_total=0, raw_feed=[], incidents=[],
@@ -42,12 +57,3 @@ async def get_incidents(mode: str = Query("scenario", description="scenario | li
         scenario_duration=snap.scenario_duration,
         feed_complete=snap.feed_complete,
     )
-
-
-@router.post("/reset")
-async def reset(mode: str = Query("scenario", description="scenario | live")) -> dict:
-    """Restart the scripted clock, or clear the live cache to force a re-pull."""
-    source = get_sources().get(mode)
-    if source is not None:
-        source.reset()
-    return {"ok": True, "mode": mode}
