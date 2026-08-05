@@ -19,9 +19,9 @@ incident picture that stays traceable to its evidence.**
 
 ## Quick start
 
-**Deploy** — the API is stateless, so it drops onto Vercel as-is (`vercel.json` and
-`pyproject.toml` are already configured), or onto any container host via the Dockerfile
-and `render.yaml`.
+**Deploy** — the API is stateless, so it drops onto Vercel as-is: `vercel.json` declares the
+front end and the API as two services and routes `/api/*` to the latter. Or onto any
+container host via the Dockerfile and `render.yaml`.
 
 **Docker** — one command, no toolchain:
 

@@ -36,3 +36,6 @@ desktop.ini
 _shot*.png
 _check.js
 *.log
+
+.vercel
+.env*
