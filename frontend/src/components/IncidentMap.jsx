@@ -3,8 +3,12 @@ import { useCallback, useEffect, useRef } from "react";
 
 import { CRITICAL_THRESHOLD, categoryHex } from "../lib/constants.js";
 
-const TILE_URL = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
-const TILE_ATTRIBUTION = "© OpenStreetMap · © CARTO";
+// Esri's dark canvas: keyless, no registration, no referer gate. CARTO's free dark_all
+// started serving "API key required" tiles, which is fatal on a map you demo live.
+// Esri splits base and labels into two layers, so both go on — place names are the point.
+const TILE_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
+const LABEL_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}";
+const TILE_ATTRIBUTION = "© Esri · © OpenStreetMap contributors";
 const FIT_OPTIONS = { padding: [90, 90], maxZoom: 14, animate: false };
 
 /**
@@ -90,7 +94,8 @@ export default function IncidentMap({ incidents, center, mode, selectedId, onSel
       center ?? [19.05, 72.88],
       13,
     );
-    L.tileLayer(TILE_URL, { maxZoom: 19, subdomains: "abcd", attribution: TILE_ATTRIBUTION }).addTo(map);
+    L.tileLayer(TILE_URL, { maxZoom: 16, attribution: TILE_ATTRIBUTION }).addTo(map);
+    L.tileLayer(LABEL_URL, { maxZoom: 16 }).addTo(map);
     mapRef.current = map;
 
     // The container's real height only exists once the grid row has resolved, which is
